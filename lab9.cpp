@@ -61,31 +61,11 @@ public:
     }
 };
 
-// Класс инвентаря
-class Inventory {
-private:
-    std::vector<std::string> items;
-
-public:
-    void addItem(const std::string& item) { items.push_back(item); }
-    void removeItem(const std::string& item) {
-        auto it = std::find(items.begin(), items.end(), item);
-        if (it != items.end()) items.erase(it);
-    }
-    void display() const {
-        std::cout << "Inventory: ";
-        for (const auto& item : items) std::cout << item << " ";
-        std::cout << "\n";
-    }
-    const std::vector<std::string>& getItems() const { return items; }
-    void setItems(const std::vector<std::string>& newItems) { items = newItems; }
-};
 
 // Класс персонажа
 class Character : public Entity {
     int level;
     int experience;
-    Inventory inventory;
 
 public:
     Character(const std::string& n, int h, int a, int d)
@@ -112,7 +92,6 @@ public:
                   << ", Level: " << level << ", Experience: " << experience << "\n";
     }
 
-    Inventory& getInventory() { return inventory; }
     int getLevel() const { return level; }
     int getExperience() const { return experience; }
     void setLevel(int lv) { level = lv; }
@@ -150,7 +129,7 @@ public:
         std::string name;
         std::cout << "Enter character name: ";
         std::cin >> name;
-        player = std::make_unique<Character>(name, 100, 15, 10);
+        player = std::make_unique<Character>(name, 100, (15 + rand() % 5), 10);
         logger.log("Character created: " + name);
     }
 
@@ -196,9 +175,6 @@ public:
              << player->getLevel() << "\n"
              << player->getExperience() << "\n";
 
-        for (const auto& item : player->getInventory().getItems()) {
-            file << item << "\n";
-        }
         logger.log("Game saved to " + filename);
     }
 
@@ -214,12 +190,6 @@ public:
         player->setLevel(level);
         player->setExperience(experience);
 
-        std::vector<std::string> items;
-        std::string item;
-        while (file >> item) {
-            items.push_back(item);
-        }
-        player->getInventory().setItems(items);
         logger.log("Game loaded from " + filename);
     }
 
